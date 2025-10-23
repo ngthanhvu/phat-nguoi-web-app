@@ -5,9 +5,9 @@
             <House />
             <span class="text-xs mt-1">Trang chủ</span>
         </RouterLink>
-        <RouterLink to="/about"
+        <RouterLink to="/history"
             class="flex flex-col items-center text-base-content/70 hover:text-base-content transition"
-            :class="{ 'text-primary font-semibold': route.path.startsWith('/about') }">
+            :class="{ 'text-primary font-semibold': route.path.startsWith('/history') }">
             <History />
             <span class="text-xs mt-1">Lịch sử</span>
         </RouterLink>
