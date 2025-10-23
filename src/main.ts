@@ -1,9 +1,18 @@
 import { createApp } from 'vue'
-import './style.css'
+import { createHead } from '@vueuse/head'
+import { createPinia } from 'pinia'
+
 import App from './App.vue'
 import router from './router'
-import { createHead } from '@vueuse/head'
+
+import './style.css'
 
 const head = createHead()
+const pinia = createPinia()
+const app = createApp(App)
 
-createApp(App).use(router).use(head).mount('#app')
+app.use(router)
+app.use(head)
+app.use(pinia)
+
+app.mount('#app')

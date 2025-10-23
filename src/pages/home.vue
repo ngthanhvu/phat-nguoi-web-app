@@ -109,6 +109,7 @@ import { ref } from 'vue'
 import { Car, Bike } from 'lucide-vue-next'
 import { useHead } from '@unhead/vue'
 import { useFetch } from '../composable/useFetch'
+import { useHistoryStore } from '../store/history'
 
 useHead({
     title: 'Trang chủ - Phạt nguội',
@@ -119,7 +120,8 @@ useHead({
 
 const plate = ref('')
 const vehicleType = ref('')
-const { loading, error, result, fetchPhatNguoi, createRecord } = useFetch()
+const { loading, error, result, fetchPhatNguoi } = useFetch()
+const historyStore = useHistoryStore()
 
 function statusColor(status: string) {
     if (status.includes('Chưa')) return 'bg-red-50 border-red-200 text-red-900'
@@ -133,17 +135,9 @@ async function fetchData() {
         // Gọi API thực
         await fetchPhatNguoi(plate.value)
         
-        // Lưu lịch sử vào Supabase nếu có kết quả
-        if (result.value && result.value.status === 1) {
-            const searchRecord = {
-                plate: plate.value,
-                vehicle_type: vehicleType.value,
-                search_time: new Date().toISOString(),
-                api_response: result.value,
-                created_at: new Date().toISOString()
-            }
-            
-            await createRecord('search_history', searchRecord)
+        // Lưu lịch sử vào store nếu có kết quả
+        if (result.value && (result.value.status === 1 || result.value.status === 2)) {
+            await historyStore.addHistoryItem(plate.value, vehicleType.value as 'oto' | 'xemay', result.value)
         }
     } catch (err) {
         console.error('Lỗi khi tra cứu:', err)

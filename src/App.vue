@@ -6,6 +6,20 @@
   </div>
 
   <div class="md:hidden">
-    <router-view />
+    <SplashScreen v-if="isLoading" />
+    <router-view v-else />
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import SplashScreen from './components/SplashScreen.vue'
+
+const isLoading = ref(true)
+
+onMounted(() => {
+  setTimeout(() => {
+    isLoading.value = false
+  }, 2000)
+})
+</script>
