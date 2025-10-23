@@ -112,7 +112,7 @@ import { useFetch } from '../composable/useFetch'
 import { useHistoryStore } from '../store/history'
 
 useHead({
-    title: 'Trang chủ - Phạt nguội',
+    title: 'Trang chủ | Phạt nguội',
     meta: [
         { name: 'description', content: 'Trang chủ của ứng dụng Phạt nguội' }
     ]

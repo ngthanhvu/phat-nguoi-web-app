@@ -217,7 +217,7 @@ import { useHistoryStore } from '../store/history'
 import { useHead } from '@vueuse/head'
 
 useHead({
-    title: 'Lịch sử tra cứu',
+    title: 'Lịch sử tra cứu | Phạt nguội',
     meta: [
         { name: 'description', content: 'Xem lịch sử tra cứu của bạn' },
     ],
