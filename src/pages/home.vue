@@ -38,7 +38,7 @@
             <span v-else class="loading loading-spinner loading-sm"></span>
         </button>
 
-        <div v-if="result && result.data?.length" class="mt-5 space-y-3">
+        <div v-if="result && result.status === 1 && result.data?.length" class="mt-5 space-y-3">
             <transition-group name="fade" tag="div">
                 <div v-for="(item, i) in result.data" :key="i" :class="[
                     'card border shadow-sm transition-all duration-300 rounded-xl mt-3',
@@ -85,17 +85,21 @@
             </transition-group>
 
             <div class="text-sm opacity-70 text-center mt-4">
-                Tổng: {{ result.data_info.total }} vụ •
-                Chưa xử phạt: {{ result.data_info.chuaxuphat }} •
-                Đã xử phạt: {{ result.data_info.daxuphat }}
+                Tổng: {{ result.data_info?.total || 0 }} vụ •
+                Chưa xử phạt: {{ result.data_info?.chuaxuphat || 0 }} •
+                Đã xử phạt: {{ result.data_info?.daxuphat || 0 }}
                 <br />
-                Cập nhật gần nhất: {{ result.data_info.latest }}
+                Cập nhật gần nhất: {{ result.data_info?.latest || 'N/A' }}
             </div>
         </div>
 
-        <div v-else-if="result && !result.data?.length"
+        <div v-else-if="result && result.status === 2"
             class="text-center text-success mt-4 card border shadow-sm transition-all duration-300 rounded-xl p-3">
             🎉 Xe của bạn không có vi phạm nào!
+        </div>
+
+        <div v-if="error" class="alert alert-error mt-4">
+            <span>Lỗi: {{ error }}</span>
         </div>
     </div>
 </template>
@@ -104,6 +108,7 @@
 import { ref } from 'vue'
 import { Car, Bike } from 'lucide-vue-next'
 import { useHead } from '@unhead/vue'
+import { useFetch } from '../composable/useFetch'
 
 useHead({
     title: 'Trang chủ - Phạt nguội',
@@ -114,52 +119,34 @@ useHead({
 
 const plate = ref('')
 const vehicleType = ref('')
-const loading = ref(false)
-const result = ref<any | null>(null)
+const { loading, error, result, fetchPhatNguoi, createRecord } = useFetch()
 
 function statusColor(status: string) {
     if (status.includes('Chưa')) return 'bg-red-50 border-red-200 text-red-900'
     if (status.includes('Đã')) return 'bg-green-50 border-green-200 text-green-900'
     return 'bg-gray-50 border-gray-200 text-gray-800'
 }
-
 async function fetchData() {
-    loading.value = true
-    result.value = null
+    if (!plate.value || !vehicleType.value) return
 
     try {
-        await new Promise((r) => setTimeout(r, 600))
-
-        const mockRes = {
-            status: 1,
-            msg: '',
-            data: [
-                {
-                    'Biển kiểm soát': plate.value,
-                    'Màu biển': 'Nền mầu trắng, chữ và số màu đen',
-                    'Loại phương tiện': vehicleType.value === 'oto' ? 'Ô tô' : 'Xe máy',
-                    'Thời gian vi phạm': '10:21, 09/07/2023',
-                    'Địa điểm vi phạm': 'Km 82+400, QL37, Xã Việt Tiến, Thị xã Việt Yên, Bắc Giang',
-                    'Hành vi vi phạm': 'Chạy quá tốc độ trên 20 km/h đến 35 km/h',
-                    'Trạng thái': 'Chưa xử phạt',
-                    'Đơn vị phát hiện vi phạm': 'CA thị xã Việt Yên - Tỉnh Bắc Giang',
-                    'Nơi giải quyết vụ việc': ['1. Đội CSGT thị xã Việt Yên', 'Địa chỉ: Việt Yên']
-                }
-            ],
-            data_info: {
-                total: 1,
-                chuaxuphat: 1,
-                daxuphat: 0,
-                latest: '19:53 01/06/2024'
+        // Gọi API thực
+        await fetchPhatNguoi(plate.value)
+        
+        // Lưu lịch sử vào Supabase nếu có kết quả
+        if (result.value && result.value.status === 1) {
+            const searchRecord = {
+                plate: plate.value,
+                vehicle_type: vehicleType.value,
+                search_time: new Date().toISOString(),
+                api_response: result.value,
+                created_at: new Date().toISOString()
             }
+            
+            await createRecord('search_history', searchRecord)
         }
-
-        result.value = mockRes
     } catch (err) {
-        console.error(err)
-        result.value = { data: [] }
-    } finally {
-        loading.value = false
+        console.error('Lỗi khi tra cứu:', err)
     }
 }
 </script>
