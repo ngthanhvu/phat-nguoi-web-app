@@ -7,10 +7,10 @@ export default defineConfig({
   plugins: [vue(), tailwindcss(),
   VitePWA({
     registerType: 'autoUpdate',
-    includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
+    includeAssets: ['logo.png',],
     manifest: {
-      name: 'Check Phạt Người',
-      short_name: 'Phạt Người',
+      name: 'Check Phạt Nguội',
+      short_name: 'Phạt Nguội',
       description: 'Ứng dụng kiểm tra phạt nguội phương tiện',
       theme_color: '#42b883',
       background_color: '#ffffff',
