@@ -2,7 +2,7 @@
 <template>
     <div class="flex flex-col items-center justify-center min-h-screen bg-white z-100">
         <img src="/logo.png" alt="App Logo" class="w-32 h-32 animate-bounce mb-4" />
-        <p class="text-gray-600 text-lg font-medium animate-pulse">
+        <p class="text-gray-900 text-lg font-medium animate-pulse">
             Đang tải...
         </p>
     </div>
